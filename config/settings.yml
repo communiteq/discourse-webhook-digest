@@ -1,0 +1,5 @@
+plugins:
+  webhook_digest_enabled:
+    default: false
+  webhook_digest_url:
+    default: ''  

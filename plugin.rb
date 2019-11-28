@@ -40,7 +40,7 @@ end
 after_initialize {
 
   class ::Jobs::EnqueueDigestWebhooks  < Jobs::Scheduled
-    every 30.seconds
+    every 30.minutes
     
     def execute(args)
       return unless SiteSetting.webhook_digest_enabled

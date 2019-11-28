@@ -45,7 +45,7 @@ after_initialize {
     def execute(args)
       return unless SiteSetting.webhook_digest_enabled
       hours = SiteSetting.webhook_digest_interval
-      DigestWebhooks.generate(hours, SiteSetting.webhook_digest_types.split(','))
+      DigestWebhooks.generate(hours, SiteSetting.webhook_digest_types.split('+'))
     end
   end
   
@@ -65,12 +65,11 @@ after_initialize {
     
     def self.generate(hours, types)
       user_ids = target_user_ids(hours)
-      #user_ids = User.real.pluck(:id) # @debug 
       users = User.where(id: user_ids)
       return if users.blank?
       users.each do |user|
-        json = generate_for_user(hours, types, user)
-        send_to_webhook(json)
+        digest = generate_for_user(hours, types, user)
+        send_to_webhook(digest)
       end
     end
     
@@ -91,7 +90,7 @@ after_initialize {
       payload['user_id'] = user.id
       payload['username'] = user.username
       
-      puts JSON.pretty_generate(payload) # @debug
+      #puts JSON.pretty_generate(payload) # @debug
       payload
     end
     

@@ -51,6 +51,14 @@ after_initialize {
   
   class ::DigestWebhooks
   
+    def self.create_connection(url)
+      headers = {
+        "Content-Type" => "application/json"
+      }
+      Excon.new(url, headers: headers, expects: [200, 201])
+    end
+
+
     # return all users that haven't got a digest in the last X hours, and were not seen in the last X hours either.
     def self.target_user_ids(hours)
       query = User.real
@@ -92,6 +100,17 @@ after_initialize {
       
       #puts JSON.pretty_generate(payload) # @debug
       payload
+    end
+    
+    def self.send_to_webhook(digest)
+      payload = JSON.pretty_generate(digest)
+      
+      uri = SiteSetting.webhook_digest_url
+      hostpart = uri.split('/')[0..2].join('/')
+      pathpart = '/' + uri.split('/')[3..].join('/')
+      
+      conn = create_connection(hostpart)
+      conn.post(path: pathpart, body: payload)
     end
     
   end

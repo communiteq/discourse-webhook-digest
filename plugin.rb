@@ -78,6 +78,9 @@ after_initialize {
       users.each do |user|
         digest = generate_for_user(hours, types, user)
         send_to_webhook(digest)
+                
+        user.custom_fields['last_digest_at'] = DateTime.now.strftime('%Y-%m-%d %H:%M:%S')
+        user.save!
       end
     end
     

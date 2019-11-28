@@ -1,0 +1,7 @@
+en:
+  site_settings:
+    webhook_digest_enabled: Enable sending digests in HTML or JSON format to a webhook.
+    webhook_digest_url: Send the digests to this webhook.
+    webhook_digest_interval: Create a digest when the user has not visited or got a digest since this long.
+    webhook_digest_types: The format in which you want to receive the digests.
+    

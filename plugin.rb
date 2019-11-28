@@ -106,6 +106,8 @@ after_initialize {
       payload = JSON.pretty_generate(digest)
       
       uri = SiteSetting.webhook_digest_url
+      return if uri.nil? or uri.empty?
+      
       hostpart = uri.split('/')[0..2].join('/')
       pathpart = '/' + uri.split('/')[3..].join('/')
       

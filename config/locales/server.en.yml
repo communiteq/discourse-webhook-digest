@@ -4,4 +4,4 @@ en:
     webhook_digest_url: Send the digests to this webhook.
     webhook_digest_interval: Create a digest when the user has not visited or got a digest since this long.
     webhook_digest_types: The format in which you want to receive the digests.
-    
+    webhook_digest_shared_secret: Shared secret to authenticate the webhook call.

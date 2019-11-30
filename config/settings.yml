@@ -1,6 +1,8 @@
 plugins:
   webhook_digest_enabled:
     default: false
+  webhook_digest_shared_secret:
+    default: ''
   webhook_digest_url:
     default: ''  
   webhook_digest_interval:

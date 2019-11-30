@@ -112,7 +112,7 @@ after_initialize {
       
       hostpart = uri.split('/')[0..2].join('/')
       pathpart = '/' + uri.split('/')[3..].join('/')
-      
+      pathpart = "#{pathpart}?secret=#{SiteSetting.webhook_digest_shared_secret}" if not SiteSetting.webhook_digest_shared_secret.empty?
       conn = create_connection(hostpart)
       conn.post(path: pathpart, body: payload)
     end

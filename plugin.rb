@@ -101,7 +101,6 @@ after_initialize {
       payload['user_id'] = user.id
       payload['username'] = user.username
       
-      #puts JSON.pretty_generate(payload) # @debug
       payload
     end
     

@@ -7,34 +7,7 @@
 
 enabled_site_setting :webhook_digest_enabled
 
-
 require 'enum_site_setting'
-
-class ::DigestIntervalSiteSetting < ::EnumSiteSetting
-  def self.valid_value?(val)
-    values.any? { |v| v[:value] == val.to_s }
-  end
-
-  def self.values
-    @values ||= [
-      { name: 'js.webhook_digest.interval.hour', value: '1' },
-      { name: 'js.webhook_digest.interval.halfday', value: '12' },
-      { name: 'js.webhook_digest.interval.day', value: '24' },
-      { name: 'js.webhook_digest.interval.twodays', value: '48' },
-      { name: 'js.webhook_digest.interval.week', value: '168' },
-      { name: 'js.webhook_digest.interval.twoweeks', value: '336' },
-      { name: 'js.webhook_digest.interval.month', value: '720' },
-      { name: 'js.webhook_digest.interval.twomonths', value: '1440' },
-      { name: 'js.webhook_digest.interval.sixmonths', value: '3268' },
-      { name: 'js.webhook_digest.interval.year', value: '8760' },
-    ]
-  end
-
-  def self.translate_names?
-    true
-  end
-end
-
 
 
 after_initialize {
@@ -44,7 +17,7 @@ after_initialize {
     
     def execute(args)
       return unless SiteSetting.webhook_digest_enabled
-      hours = SiteSetting.webhook_digest_interval
+      hours = SiteSetting.webhook_digest_interval_hours
       DigestWebhooks.generate(hours, SiteSetting.webhook_digest_types.split('+'))
     end
   end

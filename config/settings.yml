@@ -5,9 +5,8 @@ plugins:
     default: ''
   webhook_digest_url:
     default: ''  
-  webhook_digest_interval:
-    default: 168
-    enum: 'DigestIntervalSiteSetting'
+  webhook_digest_interval_hours:
+    default: 72
   webhook_digest_types:
     default: json+html
     type: enum

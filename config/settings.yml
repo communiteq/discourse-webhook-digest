@@ -7,6 +7,10 @@ plugins:
     default: ''  
   webhook_digest_interval_hours:
     default: 72
+  webhook_digest_suppress_after_days:
+    default: 31
+  webhook_digest_delay_ms:
+    default: 0
   webhook_digest_types:
     default: json+html
     type: enum

@@ -40,6 +40,7 @@ after_initialize {
         .where(staged: false)
         .joins("LEFT JOIN user_custom_fields ON users.id = user_id AND user_custom_fields.name = 'last_digest_at'")
         .where("GREATEST(TO_TIMESTAMP(value, 'YYYY-MM-DD HH24:MI:SS'), last_seen_at) < CURRENT_TIMESTAMP - ('1 HOUR'::INTERVAL * #{hours})")
+        .where("COALESCE(last_seen_at, '2010-01-01') >= CURRENT_TIMESTAMP - ('1 DAY'::INTERVAL * #{SiteSetting.webhook_digest_suppress_after_days})")
       query = query.where("approved OR moderator OR admin") if SiteSetting.must_approve_users?
       query.pluck(:id)
     end
@@ -51,7 +52,9 @@ after_initialize {
       users.each do |user|
         digest = generate_for_user(hours, types, user)
         send_to_webhook(digest)
-                
+
+        sleep SiteSetting.webhook_digest_delay_ms.to_f/1000
+        
         user.custom_fields['last_digest_at'] = DateTime.now.strftime('%Y-%m-%d %H:%M:%S')
         user.save!
       end

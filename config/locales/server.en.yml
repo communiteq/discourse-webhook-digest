@@ -5,3 +5,5 @@ en:
     webhook_digest_interval_hours: Create a digest when the user has not visited or got a digest since this long.
     webhook_digest_types: The format in which you want to receive the digests.
     webhook_digest_shared_secret: Shared secret to authenticate the webhook call.
+    webhook_digest_delay_ms: Delay between webhook digest calls in milliseconds.
+    webhook_digest_suppress_after_days: Stop sending the digest to the webhook if the user has not visited for (x) days.

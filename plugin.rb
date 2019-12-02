@@ -49,14 +49,15 @@ after_initialize {
       user_ids = target_user_ids(hours)
       users = User.where(id: user_ids)
       return if users.blank?
+      t1 = Time.now
       users.each do |user|
         digest = generate_for_user(hours, types, user)
         send_to_webhook(digest)
-
-        sleep SiteSetting.webhook_digest_delay_ms.to_f/1000
-        
         user.custom_fields['last_digest_at'] = DateTime.now.strftime('%Y-%m-%d %H:%M:%S')
         user.save!
+        sleep SiteSetting.webhook_digest_delay_ms.to_f/1000
+        t2 = Time.now
+        break if (t2 - t1) > 29 * 60 # break the loop after 29 minutes to prevent jobs overlap
       end
     end
     

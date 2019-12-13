@@ -51,8 +51,14 @@ after_initialize {
       return if users.blank?
       t1 = Time.now
       users.each do |user|
-        digest = generate_for_user(hours, types, user)
-        send_to_webhook(digest)
+
+        begin
+          digest = generate_for_user(hours, types, user)
+          send_to_webhook(digest)
+        rescue
+          Rails.logger.error("Error generating digest for user #{user.username}")
+        end
+
         user.custom_fields['last_digest_at'] = DateTime.now.strftime('%Y-%m-%d %H:%M:%S')
         user.save!
         sleep SiteSetting.webhook_digest_delay_ms.to_f/1000
@@ -208,7 +214,7 @@ after_initialize {
             counts << { label_key: 'user_notifications.digest.liked_received', value: value, href: "#{Discourse.base_url}/my/notifications" } if value > 0
           end
 
-	  if counts.size < 3 && (user.user_option&.digest_after_minutes || SiteSetting.default_email_digest_frequency.to_i) >= 1440
+          if counts.size < 3 && (user.user_option&.digest_after_minutes || SiteSetting.default_email_digest_frequency.to_i) >= 1440
             value = summary_new_users_count(min_date)
             counts << { label_key: 'user_notifications.digest.new_users', value: value, href: "#{Discourse.base_url}/about" } if value > 0
           end
@@ -216,7 +222,13 @@ after_initialize {
           last_seen_at = short_date(user.last_seen_at || user.created_at)
           preheader_text = I18n.t('user_notifications.digest.preheader', last_seen_at: last_seen_at)
         end
-        result = [ :last_seen_at => last_seen_at, :preheader_text => preheader_text, :popular_topics => popular_topics.as_json, :counts => counts, :other_new_for_you => other_new_for_you.as_json ]
+        result = [ 
+          :last_seen_at => last_seen_at, 
+          :preheader_text => preheader_text, 
+          :popular_topics => popular_topics.as_json, 
+          :counts => counts, 
+          :other_new_for_you => other_new_for_you.as_json 
+        ]
         result
     end
   end

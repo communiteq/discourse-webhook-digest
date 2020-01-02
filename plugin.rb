@@ -233,4 +233,31 @@ after_initialize {
     end
   end
 
+  module ::DiscourseDigest
+    class Engine < ::Rails::Engine
+      engine_name "discourse-digest".freeze
+      isolate_namespace DiscourseDigest
+    end
+  end
+
+  require_dependency "application_controller"
+
+  class DiscourseDigest::DigestController < ::ApplicationController
+    layout false
+    skip_before_action :preload_json, :check_xhr
+
+    def show
+      hours = Integer(params[:hours])
+      digest = ::DigestWebhooks::generate_for_user(hours, 'json', current_user)
+      render json: digest
+    end
+  end
+
+  Discourse::Application.routes.prepend do
+    mount ::DiscourseDigest::Engine, at: "/digest"
+  end
+
+  DiscourseDigest::Engine.routes.draw do
+    get ":hours.json" => "digest#show", hours: /[0-9]*/
+  end
 }
